@@ -5,7 +5,7 @@ import { injected, metaMask, safe, walletConnect } from "wagmi/connectors";
 const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
 
 export const config = getDefaultConfig({
-  appName: "Estate-Chain",
+  appName: "estatechain",
   projectId: projectId,
   chains: [holesky],
   ssr: true,

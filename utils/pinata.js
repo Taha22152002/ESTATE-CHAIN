@@ -120,6 +120,7 @@ export const createAndUploadPropertyMetadata = async (
       description: propertyData.description,
       location: propertyData.location,
       images: imageHashes,
+      virtualTour: propertyData.virtualTour || "",
       attributes: [
         {
           trait_type: "Property Type",

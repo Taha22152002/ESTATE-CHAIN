@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
- * @title EstateChainDApp
+ * @title Estate-Chain-DApp
  * @dev A smart contract for a real estate decentralized application
  * Features:
  * - Property listing with royalty system (up to 3 royalty holders)
@@ -47,6 +47,7 @@ contract RealEstateDApp is Ownable, ReentrancyGuard {
     struct Property {
         uint256 propertyId;
         string propertyUri; // IPFS URI containing property metadata (images, description, etc.)
+        string virtualTour; // URL a virtual tour (video, 3D, etc.)
         address payable owner;
         uint256 price;
         PropertyStatus status;
@@ -108,59 +109,62 @@ contract RealEstateDApp is Ownable, ReentrancyGuard {
      * @return Property ID of the newly listed property
      */
     function listProperty(
-        string memory _propertyUri,
-        uint256 _price,
-        address payable[] memory _royaltyHolders,
-        uint256[] memory _royaltyPercentages
-    ) public payable nonReentrant returns (uint256) {
-        require(msg.value >= listingFee, "Listing fee not provided");
-        require(_royaltyHolders.length <= 3, "Maximum 3 royalty holders allowed");
-        require(_royaltyHolders.length == _royaltyPercentages.length, "Array length mismatch");
-        
-        // Calculate total royalty percentage
-        uint256 totalRoyaltyPercentage = 0;
-        for (uint256 i = 0; i < _royaltyPercentages.length; i++) {
-            totalRoyaltyPercentage += _royaltyPercentages[i];
-        }
-        require(totalRoyaltyPercentage <= 5000, "Total royalty cannot exceed 50%");
-        
-        // Transfer listing fee to contract owner
-        payable(owner()).transfer(msg.value);
-        
-        // Create new property
-        uint256 newPropertyId = ++propertyCount;
-        Property storage newProperty = properties[newPropertyId];
-        newProperty.propertyId = newPropertyId;
-        newProperty.propertyUri = _propertyUri;
-        newProperty.owner = payable(msg.sender);
-        newProperty.price = _price;
-        newProperty.status = PropertyStatus.Listed;
-        newProperty.royaltyHolderCount = _royaltyHolders.length;
-        newProperty.createdAt = block.timestamp;
-        newProperty.updatedAt = block.timestamp;
-        
-        // Add royalty holders
-        for (uint256 i = 0; i < _royaltyHolders.length; i++) {
-            newProperty.royaltyHolders[i] = RoyaltyHolder({
-                holderAddress: _royaltyHolders[i],
-                percentage: _royaltyPercentages[i],
-                hasApproved: false
-            });
-        }
-        
-        // Record transaction
-        _recordTransaction(
-            newPropertyId,
-            msg.sender,
-            address(this),
-            msg.value,
-            "Listing"
-        );
-        
-        emit PropertyListed(newPropertyId, msg.sender, _price);
-        
-        return newPropertyId;
+    string memory _propertyUri,
+    string memory _virtualTour, // New parameter for virtual tour
+    uint256 _price,
+    address payable[] memory _royaltyHolders,
+    uint256[] memory _royaltyPercentages
+) public payable nonReentrant returns (uint256) {
+    require(msg.value >= listingFee, "Listing fee not provided");
+    require(_royaltyHolders.length <= 3, "Maximum 3 royalty holders allowed");
+    require(_royaltyHolders.length == _royaltyPercentages.length, "Array length mismatch");
+
+    // Calculate total royalty percentage
+    uint256 totalRoyaltyPercentage = 0;
+    for (uint256 i = 0; i < _royaltyPercentages.length; i++) {
+        totalRoyaltyPercentage += _royaltyPercentages[i];
     }
+    require(totalRoyaltyPercentage <= 5000, "Total royalty cannot exceed 50%");
+
+    // Transfer listing fee to contract owner
+    payable(owner()).transfer(msg.value);
+
+    // Create new property
+    uint256 newPropertyId = ++propertyCount;
+    Property storage newProperty = properties[newPropertyId];
+    newProperty.propertyId = newPropertyId;
+    newProperty.propertyUri = _propertyUri;
+    newProperty.virtualTour = _virtualTour; // Set virtual tour
+    newProperty.owner = payable(msg.sender);
+    newProperty.price = _price;
+    newProperty.status = PropertyStatus.Listed;
+    newProperty.royaltyHolderCount = _royaltyHolders.length;
+    newProperty.createdAt = block.timestamp;
+    newProperty.updatedAt = block.timestamp;
+
+    // Add royalty holders
+    for (uint256 i = 0; i < _royaltyHolders.length; i++) {
+        newProperty.royaltyHolders[i] = RoyaltyHolder({
+            holderAddress: _royaltyHolders[i],
+            percentage: _royaltyPercentages[i],
+            hasApproved: false
+        });
+    }
+
+    // Record transaction
+    _recordTransaction(
+        newPropertyId,
+        msg.sender,
+        address(this),
+        msg.value,
+        "Listing"
+    );
+
+    emit PropertyListed(newPropertyId, msg.sender, _price);
+
+    return newPropertyId;
+}
+
     
     /**
      * @dev Function to update property details
@@ -473,6 +477,7 @@ contract RealEstateDApp is Ownable, ReentrancyGuard {
     function getPropertyDetails(uint256 _propertyId) public view returns (
         uint256 id,
         string memory uri,
+        string memory virtualTour,
         address owner,
         uint256 price,
         PropertyStatus status,
@@ -486,6 +491,7 @@ contract RealEstateDApp is Ownable, ReentrancyGuard {
         return (
             property.propertyId,
             property.propertyUri,
+            property.virtualTour,
             property.owner,
             property.price,
             property.status,
