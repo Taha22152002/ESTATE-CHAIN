@@ -83,6 +83,7 @@ export default function AddProperty() {
     title: "",
     description: "",
     location: "",
+    virtualTour: "",
     price: "",
     propertyType: "Residential",
     bedrooms: "",
@@ -192,6 +193,7 @@ export default function AddProperty() {
       if (
         !formData.title ||
         !formData.description ||
+        !formData.virtualTour ||
         !formData.location ||
         !formData.price
       ) {
@@ -263,6 +265,7 @@ export default function AddProperty() {
       // List the property
       const transaction = await contractWithSigner.listProperty(
         propertyMetadata.metadataUri,
+        propertyMetadata.virtualTour || "", //error fix
         priceInWei,
         royaltyAddresses,
         royaltyPercentages,
@@ -409,6 +412,23 @@ export default function AddProperty() {
                 rows={4}
               />
             </div>
+
+            <div className="mb-4">
+              <label htmlFor="virtualTour" className="block text-sm font-medium text-white mb-1">
+                Property Virtual Tour <span className="text-red-500">*</span>
+                </label>
+                <input
+                type="url"
+                id="virtualTour"
+                name="virtualTour"
+                placeholder="A link for virtual tour of the property."
+                required
+                className="w-full px-4 py-2 rounded-md bg-gray-900 text-white border border-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={formData.virtualTour}
+                onChange={handleChange}
+                />
+                </div>
+
 
             <div className="flex flex-col sm:flex-row gap-4">
               <FormInput

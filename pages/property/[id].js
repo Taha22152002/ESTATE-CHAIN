@@ -21,6 +21,10 @@ import {
   FaMoneyBillWave,
   FaBolt,
   FaHome,
+  FaBed,
+  FaVideo,
+  FaBath,
+  FaMap,
   FaExclamationTriangle,
   FaPencilAlt,
   FaTimesCircle,
@@ -330,10 +334,16 @@ export default function PropertyDetails() {
 
   // Format property data for display
   const propertyTitle = metadata?.title || `Property #${property.id}`;
-  const propertyDescription =
-    metadata?.description || "No description available";
+  const propertyDescription = metadata?.description || "No description available";
   const propertyLocation = metadata?.location || "Location not specified";
   const propertyImages = metadata?.images || [];
+  const virtualTourLink = metadata?.virtualTour || "No virtual tour available"
+  const isValidLink = typeof virtualTourLink === "string" && virtualTourLink.startsWith("http");
+  const getAttr = (key) => metadata?.attributes?.find(attr => attr.trait_type === key)?.value;
+
+const propertyBedrooms = getAttr("Bedrooms") || "No bedrooms available.";
+const propertyBathrooms = getAttr("Bathrooms") || "No bathrooms available.";
+const propertyArea = getAttr("Area") ? `${getAttr("Area")} sq. ft.` : "No area available.";
 
   // Badge component for status display
   const StatusBadge = ({ status, className = "" }) => {
@@ -635,43 +645,46 @@ export default function PropertyDetails() {
                         </div>
                       </div>
                     </div>
+                    <div className="flex items-center gap-3 bg-gray-800/40 p-3 rounded-lg">
+                      <FaBed className="h-5 w-5 text-teal-400" />
+                      <div>
+                        <div className="text-xs text-gray-500 mb-1">
+                          Bedrooms
+                        </div>
+                        <div className="text-gray-300">{propertyBedrooms}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 bg-gray-800/40 p-3 rounded-lg">
+                      <FaBath className="h-5 w-5 text-teal-400" />
+                      <div>
+                        <div className="text-xs text-gray-500 mb-1">
+                          Bathrooms
+                        </div>
+                        <div className="text-gray-300">{propertyBathrooms}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 bg-gray-800/40 p-3 rounded-lg">
+                      <FaMap className="h-5 w-5 text-teal-400" />
+                      <div>
+                        <div className="text-xs text-gray-500 mb-1">
+                          Area
+                        </div>
+                        <div className="text-gray-300">{propertyArea}</div>
+                      </div>
+                    </div>
+                    {virtualTourLink && (
+                      <a
+                      href={virtualTourLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 mt-1 px-2 py-1.5 bg-gray-800/40 hover:bg-gray-700/50 rounded-md border border-gray-700 text-xs text-white transition duration-200"
+                      >
+                        <FaVideo className="h-4 w-4 text-teal-400" />
+                        <span className="text-xs text-gray-300">3D Virtual Tour</span>
+                        </a>
+                      )}
                   </div>
                 </div>
-
-                {metadata?.bedrooms || metadata?.bathrooms || metadata?.area ? (
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold mb-4 flex items-center">
-                      <FaHome className="mr-2 text-teal-400" />
-                      Additional Specifications
-                    </h3>
-                    <div className="grid grid-cols-3 gap-4 bg-gray-800/20 p-6 rounded-xl border border-gray-800/30">
-                      {metadata?.bedrooms && (
-                        <div className="text-center p-4 bg-gray-800/40 rounded-lg">
-                          <div className="text-2xl font-bold text-white mb-1">
-                            {metadata.bedrooms}
-                          </div>
-                          <div className="text-xs text-gray-400">Bedrooms</div>
-                        </div>
-                      )}
-                      {metadata?.bathrooms && (
-                        <div className="text-center p-4 bg-gray-800/40 rounded-lg">
-                          <div className="text-2xl font-bold text-white mb-1">
-                            {metadata.bathrooms}
-                          </div>
-                          <div className="text-xs text-gray-400">Bathrooms</div>
-                        </div>
-                      )}
-                      {metadata?.area && (
-                        <div className="text-center p-4 bg-gray-800/40 rounded-lg">
-                          <div className="text-2xl font-bold text-white mb-1">
-                            {metadata.area}
-                          </div>
-                          <div className="text-xs text-gray-400">Sq. Ft.</div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ) : null}
 
                 {/* Metadata */}
                 <div>

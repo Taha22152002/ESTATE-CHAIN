@@ -34,6 +34,7 @@ export default function EditProperty() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    virtualTour: "",
     location: "",
     price: "",
     propertyType: "Residential",
@@ -67,6 +68,7 @@ export default function EditProperty() {
       setFormData({
         title: metadata.title || `Property #${property.id}`,
         description: metadata.description || "",
+        virtualTour: metadata.virtualTour || "",
         location: metadata.location || "",
         price: property.price ? ethers.utils.formatEther(property.price) : "",
         propertyType:
@@ -155,6 +157,7 @@ export default function EditProperty() {
       if (
         !formData.title ||
         !formData.description ||
+        !formData.virtualTour ||
         !formData.location ||
         !formData.price
       ) {
@@ -193,6 +196,7 @@ export default function EditProperty() {
       const updatedMetadata = {
         title: formData.title,
         description: formData.description,
+        virtualTour: formData.virtualTour,
         location: formData.location,
         images: finalImageUris,
         attributes: [
@@ -388,6 +392,25 @@ export default function EditProperty() {
                 rows={4}
               />
             </div>
+
+            <div>
+              <label
+              htmlFor="virtualTour"
+              className="block text-sm font-medium text-gray-400 mb-1"
+              >
+                Property Virtual Tour *
+                </label>
+                <input
+                  type="url"
+                  id="virtualTour"
+                  name="virtualTour"
+                  value={formData.virtualTour}
+                  onChange={handleChange}
+                  className="input-field"
+                  placeholder="A link for virtual tour of the property."
+                  required
+                />
+              </div>
 
             <div>
               <label
