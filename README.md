@@ -12,6 +12,26 @@ Kindly follow the following Instructions to run the project in your system and i
 
 - Clone the repository.
 - Make sure you have node v22.3.0.
+- Generate your project id using reown:
+
+#### REOWN CLOUD
+
+```
+  OPEN: REOWN
+  URL: https://cloud.reown.com
+```
+- In env.local, replace the your_project_id with your project id. NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID = your_project_id
+- Replace the [Appname] in (provider/wagmiConfigs.js) with your project name in REOWN Cloud.
+- Generate your secret key and API key using Pinata:
+
+#### PINATA CLOUD
+
+```
+  OPEN: PINATA
+  URL: https://pinata.cloud/
+```
+
+- Replace the keys in env.local with the keys you have generated.
 - Open terminal in the root directory of the project.
 - run "npm i"
 - run "npm run dev"
@@ -48,12 +68,6 @@ We are using RemixID for deploying the contract and generation of the ABI in the
   URL: https://www.ankr.com/rpc/
 ```
 
-#### PINATA CLOUD
-
-```
-  OPEN: PINATA
-  URL: https://pinata.cloud/
-```
 
 #### WALLET CONNECT
 
